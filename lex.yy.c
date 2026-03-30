@@ -294,17 +294,17 @@ static yyconst int yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    3,    1,    1,    1,    1,    1,    1,    1,    3,
-        3,    1,    1,    3,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    3,
+        3,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    3,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    3,    3,    3,    3,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+        3,    3,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -357,55 +357,27 @@ static char *yy_last_accepting_cpos;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "pract6.l"
+#line 1 "pract8.l"
 #define INITIAL 0
-#line 2 "pract6.l"
+#line 2 "pract8.l"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-char str[100];
-int i = 0;
-int error_flag = 0;
+int isValid(char str[]) {
+    int i = 0;
 
-void S();
-void L();
-void Ldash();
+    if (str[i] == 'a') i++;
+    if (str[i] == 'b') i++;
 
-void error() {
-    error_flag = 1;
+    if (str[i] == 'c' && str[i+1] == '\0')
+        return 1;
+
+    if (str[i] == '(' && str[strlen(str)-1] == ')')
+        return 1;
+
+    return 0;
 }
-
-void S() {
-    if (str[i] == 'a') {
-        i++;
-    }
-    else if (str[i] == '(') {
-        i++;
-        L();
-        if (str[i] == ')')
-            i++;
-        else
-            error();
-    }
-    else {
-        error();
-    }
-}
-
-void L() {
-    S();
-    Ldash();
-}
-
-void Ldash() {
-    if (str[i] == ',') {
-        i++;
-        S();
-        Ldash();
-    }
-}
-#line 409 "lex.yy.c"
+#line 381 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -556,10 +528,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 49 "pract6.l"
+#line 21 "pract8.l"
 
-
-#line 563 "lex.yy.c"
+#line 534 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -644,32 +615,37 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 51 "pract6.l"
-{ strcpy(str, yytext); }
+#line 22 "pract8.l"
+{
+                printf("\nPredictive Parsing Table:\n");
+                printf("---------------------------------\n");
+                printf("Non-Terminal | a | b | c | ( | ) | $\n");
+                printf("---------------------------------\n");
+                printf("S            | ABC | - | - | D | - | -\n");
+                printf("A            | a   | e | - | - | - | -\n");
+                printf("B            | -   | b | e | - | - | -\n");
+                printf("C            | -   | - | c | (S) | - | -\n");
+                printf("D            | AC  | - | - | - | - | -\n");
+
+                printf("\nGrammar is LL(1)\n");
+
+                if (isValid(yytext))
+                    printf("Valid string\n");
+                else
+                    printf("Invalid string\n");
+           }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 53 "pract6.l"
-{
-        i = 0;
-        error_flag = 0;
-
-        S();
-
-        if (str[i] == '\0' && error_flag == 0)
-            printf("Valid string\n");
-        else
-            printf("Invalid string\n");
-
-        printf("\nEnter string: ");
-    }
+#line 41 "pract8.l"
+;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 67 "pract6.l"
+#line 43 "pract8.l"
 ECHO;
 	YY_BREAK
-#line 673 "lex.yy.c"
+#line 649 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1555,7 +1531,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 67 "pract6.l"
+#line 43 "pract8.l"
 
 
 int yywrap() {
