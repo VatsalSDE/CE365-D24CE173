@@ -6,6 +6,20 @@
       "name": "p3",
       "request": "launch",
       "mainClass": "p3",
+      "projectName": "Compiler Construction_9387bf"
+    },
+    {
+      "type": "java",
+      "name": "p2",
+      "request": "launch",
+      "mainClass": "p2",
+      "projectName": "Compiler Construction_9387bf"
+    },
+    {
+      "type": "java",
+      "name": "p3",
+      "request": "launch",
+      "mainClass": "p3",
       "projectName": "Compiler Construction_7a8ef057"
     },
     {
