@@ -1,0 +1,147 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int line_no = 1;
+int symbol_count = 0;
+int error_count = 0;
+
+typedef struct {
+    char name[100];
+} SymbolEntry;
+
+typedef struct {
+    int line;
+    char lexeme[100];
+} ErrorEntry;
+
+SymbolEntry symbol_table[1000];
+ErrorEntry error_table[1000];
+
+void add_to_symbol_table(char *name) {
+    int i;
+    for(i = 0; i < symbol_count; i++) {
+        if(strcmp(symbol_table[i].name, name) == 0) {
+            return;
+        }
+    }
+    strcpy(symbol_table[symbol_count].name, name);
+    symbol_count++;
+}
+
+void report_error(char *lexeme) {
+    error_table[error_count].line = line_no;
+    strcpy(error_table[error_count].lexeme, lexeme);
+    error_count++;
+}
+
+void print_errors() {
+    int i;
+    if(error_count > 0) {
+        printf("\nLEXICAL ERRORS\n");
+        for(i = 0; i < error_count; i++) {
+            printf("Line %d : %s invalid lexeme\n", error_table[i].line, error_table[i].lexeme);
+        }
+    } else {
+        printf("\nLEXICAL ERRORS\nNo lexical errors\n");
+    }
+}
+
+void print_symbol_table() {
+    int i;
+    printf("\nSYMBOL TABLE ENTRIES\n");
+    for(i = 0; i < symbol_count; i++) {
+        printf("%d) %s\n", i+1, symbol_table[i].name);
+    }
+}
+%}
+
+/* ----------- Definitions ----------- */
+DIGIT           [0-9]
+LETTER          [a-zA-Z_]
+IDENTIFIER      {LETTER}({LETTER}|{DIGIT})*
+INTEGER         {DIGIT}+
+FLOAT           {DIGIT}+\.{DIGIT}+
+CHAR_CONST      \'([^\'\\\n]|\\.)\'
+STRING          \"([^\"\\\n]|\\.)*\"
+WHITESPACE      [ \t]+
+NEWLINE         \n
+
+KEYWORD         auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while
+
+OPERATOR        ==|!=|<=|>=|&&|\|\||\+\+|--|->|\+=|-=|\*=|\/=|%=|<<|>>|[+\-*/%=<>!&|~^?:]
+
+PUNCTUATION     [(){}\[\];,.]
+
+SINGLE_COMMENT  \/\/.*
+MULTI_COMMENT   \/\*([^*]|\*+[^*/])*\*+\/
+
+INVALID_NUM     {DIGIT}+{LETTER}+({LETTER}|{DIGIT})*
+
+%%
+
+{SINGLE_COMMENT}        { /* ignore */ }
+
+{MULTI_COMMENT}         {
+                            int i;
+                            for(i = 0; yytext[i] != '\0'; i++) {
+                                if(yytext[i] == '\n') line_no++;
+                            }
+                        }
+
+/* ?? IMPORTANT: INVALID_NUM BEFORE INTEGER */
+{INVALID_NUM}           { report_error(yytext); }
+
+{KEYWORD}               { printf("Keyword: %s\n", yytext); }
+
+{IDENTIFIER}            {
+                            printf("Identifier: %s\n", yytext);
+                            add_to_symbol_table(yytext);
+                        }
+
+{FLOAT}                 { printf("Constant: %s\n", yytext); }
+{INTEGER}               { printf("Constant: %s\n", yytext); }
+
+{CHAR_CONST}            { printf("Constant: %s\n", yytext); }
+{STRING}                { printf("String: %s\n", yytext); }
+
+{OPERATOR}              { printf("Operator: %s\n", yytext); }
+{PUNCTUATION}           { printf("Punctuation: %s\n", yytext); }
+
+{WHITESPACE}            { /* ignore */ }
+{NEWLINE}               { line_no++; }
+
+.                       { report_error(yytext); }
+
+%%
+
+int yywrap() {
+    return 1;
+}
+
+int main(int argc, char *argv[]) {
+    FILE *file;
+
+    if(argc < 2) {
+        printf("Usage: %s <input_file>\n", argv[0]);
+        return 1;
+    }
+
+    file = fopen(argv[1], "r");
+    if(!file) {
+        printf("Error: Cannot open file\n");
+        return 1;
+    }
+
+    yyin = file;
+
+    printf("TOKENS\n");
+    yylex();
+
+    print_errors();
+    print_symbol_table();
+
+    fclose(file);
+    return 0;
+}
