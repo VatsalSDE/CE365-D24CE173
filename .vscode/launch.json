@@ -2,6 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "java",
+      "name": "p3",
+      "request": "launch",
+      "mainClass": "p3",
+      "projectName": "Compiler Construction_7a8ef057"
+    },
+    {
+      "type": "java",
+      "name": "p2",
+      "request": "launch",
+      "mainClass": "p2",
+      "projectName": "Compiler Construction_7a8ef057"
+    },
+    {
+      "type": "java",
+      "name": "p2",
+      "request": "launch",
+      "mainClass": "p2",
+      "projectName": "Compiler Construction_8893745d"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
